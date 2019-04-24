@@ -213,13 +213,6 @@ if __name__ == "__main__":
     setting.table = 'step_same_table'
     select_db = SelectDB.SelectDB()
     df = select_db.select_data_from_DB(setting)
-    # array1 = Visualization.making_select_list(df, 'p')
-    # array2 = Visualization.making_select_list(df, 'v')
-    # temp1 = Visualization.covert_to_select_list_value(array1, 0.1)
-    # temp2 = Visualization.covert_to_select_list_value(array2, 0.6)
-    # df1 = df[df.p == temp1]
-    # df2 = df1[df1.v == temp2]
-    # print(df2)
     visualization = Visualization()
     fig = plt.figure()
     sns.set()

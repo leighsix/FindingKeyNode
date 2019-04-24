@@ -6,7 +6,6 @@ import KFDecisionDynamics
 import MakingPandas
 import InterconnectedLayerModeling
 import matplotlib
-import Interconnected_Network_Visualization
 matplotlib.use("Agg")
 
 
@@ -16,50 +15,6 @@ class KFInterconnectedDynamics:
         self.kfdecision = KFDecisionDynamics.KFDecisionDynamics()
         self.mp = MakingPandas.MakingPandas()
 
-    def average_interconnected_dynamics(self, setting, inter_layer, p, v, node_i_name):
-        num_data = np.zeros([setting.Limited_step + 1, 16])
-        for i in range(setting.Repeating_number):
-            temp_inter_layer = inter_layer
-            dynamics_result = self.interconnected_dynamics(setting, temp_inter_layer, p, v, node_i_name)
-            num_data = num_data + dynamics_result
-        Num_Data = num_data / setting.Repeating_number
-        return Num_Data
-
-    def average_interconnected_dynamics_for_100steps(self, setting, inter_layer, p, v, node_i_name):
-        num_data = np.zeros(16)
-        for i in range(setting.Repeating_number):
-            temp_inter_layer = inter_layer
-            dynamics_result = self.interconnected_dynamics_100steps_result_only(setting, temp_inter_layer, p, v, node_i_name)
-            num_data = num_data + dynamics_result
-        Num_Data = num_data / setting.Repeating_number
-        return Num_Data
-
-    def interconnected_dynamics_100steps_result_only(self, setting, inter_layer, p, v, node_i_name):
-        step_number = 0
-        prob_p = p
-        while True:
-            inter_layer = self.kfopinion.A_layer_dynamics(setting, inter_layer, prob_p, node_i_name)
-            decision = self.kfdecision.B_layer_dynamics(setting, inter_layer, v, node_i_name)
-            inter_layer = decision[0]
-            prob_beta_mean = decision[1]
-            step_number += 1
-            if step_number >= setting.Limited_step:
-                layer_state_mean = self.mp.layer_state_mean(setting, inter_layer)
-                different_state_ratio = self.mp.different_state_ratio(setting, inter_layer)
-                fraction_plus = self.mp.calculate_fraction_plus(setting, inter_layer)
-                time_count = self.kfopinion.A_COUNT + self.kfdecision.B_COUNT
-                array_value = np.array([layer_state_mean[0], layer_state_mean[1],
-                                        fraction_plus[0], fraction_plus[1],
-                                        prob_p, prob_beta_mean, different_state_ratio[0],
-                                        different_state_ratio[1], different_state_ratio[2],
-                                        len(sorted(inter_layer.A_edges.edges)), len(inter_layer.B_edges),
-                                        self.mp.judging_consensus(setting, inter_layer),
-                                        self.mp.counting_negative_node(setting, inter_layer),
-                                        self.mp.counting_positive_node(setting, inter_layer), time_count, v])
-                break
-        self.kfopinion.A_COUNT = 0
-        self.kfdecision.B_COUNT = 0
-        return array_value
 
     def interconnected_dynamics(self, setting, inter_layer, p, v, node_i_name):
         total_value = np.zeros(16)

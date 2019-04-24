@@ -1,25 +1,15 @@
 import networkx as nx
 import numpy as np
-import pandas as pd
-import random
-import matplotlib.pyplot as plt
-import matplotlib
 import Setting_Simulation_Value
-matplotlib.use("TkAgg")
-
-## A layer Modeling : A, A_edges, AB_edges, AB_neighbor
 
 
 class InterconnectedLayerModeling:
     def __init__(self, setting):
-        # network : 1 = random regular graph   2 = barabasi-albert graph
         A_edges_array = self.A_layer_config(setting)
         self.A_edges = A_edges_array[0]
         self.AB_edges = A_edges_array[1]
         self.AB_neighbor = A_edges_array[2]
         self.B_edges = self.B_layer_config(setting)
-        self.A_node_info = self.making_A_node_info(setting)
-        self.B_node_info = self.making_B_node_info(setting)
         self.two_layer_graph = self.making_interconnected_graph(setting)
 
     def making_interconnected_graph(self, setting):
@@ -35,7 +25,6 @@ class InterconnectedLayerModeling:
         AB_edges_list = self.AB_edges
         self.two_layer_graph.add_edges_from(AB_edges_list)
         return self.two_layer_graph
-
 
     def A_layer_config(self, setting):
         # A_layer 구성요소 A_layer_config(state = [1,2], node = 2048, edge = 5, Max = 2, Min = -2)
@@ -76,11 +65,6 @@ class InterconnectedLayerModeling:
         # B 노드 0에 A노드 0번, 1번이 연결되어 있다는 뜻
         # AB_edges는 (0, 1)은 B 노드 0번과 A 노드 1번이 연결되어 있다는 뜻
 
-    def making_A_node_info(self, setting):  # layer, node_number, location
-        node_info = [{'node_number': i, 'layer': 'A', 'location': (random.random(), random.random())}
-                     for i in range(setting.A_node)]
-        node_info = pd.DataFrame(node_info, columns=['node_number', 'layer', 'location'])
-        return node_info
 
     def B_layer_config(self, setting):  # B_layer 구성요소 B_layer_config(state = [-1], node = 2048, edge = 5, inter_edge= 1)
         self.select_layer_B_model(setting)
@@ -108,12 +92,6 @@ class InterconnectedLayerModeling:
             self.B_edges.append((sorted(b_edges.edges)[i][0] + setting.A_node,
                             sorted(b_edges.edges)[i][1] + setting.A_node))
         return self.B_edges
-
-    def making_B_node_info(self, setting):  # layer, node_number, location
-        node_info = [{'node_number': i, 'layer': 'B', 'location': (random.random(), random.random())}
-                    for i in range(setting.A_node, setting.A_node+setting.B_node)]
-        node_info = pd.DataFrame(node_info, columns=['node_number', 'layer', 'location'])
-        return node_info
 
 
 if __name__ == "__main__" :
